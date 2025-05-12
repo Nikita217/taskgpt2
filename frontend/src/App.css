@@ -1,7 +1,6 @@
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  background: url('/bg-blur.jpg') no-repeat center center fixed;
   background-size: cover;
 }
 .task-item {
