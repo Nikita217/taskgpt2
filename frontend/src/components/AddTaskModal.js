@@ -7,9 +7,9 @@ function AddTaskModal({ onClose, onTaskAdded }) {
   const [loading, setLoading] = useState(false);
   const [aiSuggest, setAiSuggest] = useState([]);
 
-  const save = () => {
-    setLoading(True);
-  };
+  //const save = () => {
+    //setLoading(True);
+  //};
 
   async function save() {
     if (!title) return;
