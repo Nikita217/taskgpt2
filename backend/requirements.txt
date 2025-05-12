@@ -1,6 +1,6 @@
 Flask
 gunicorn          
-openai
+openai==0.28.1
 gspread
 oauth2client
 requests
