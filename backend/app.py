@@ -8,10 +8,16 @@ app = Flask(__name__, static_folder='../frontend_build', static_url_path='')
 tasks = sheets_helper.load_tasks()
 print(f"Loaded {len(tasks)} tasks from Google Sheet.")
 
-@app.route('/')
-def index():
-    return send_from_directory(app.static_folder, 'index.html')
-
+@app.route("/", defaults={"path": ""})
+@app.route("/<path:path>")
+def serve_spa(path):
+    # если запрашивают существующий файл (css/js/png) — отдаём
+    file_path = os.path.join(app.static_folder, path)
+    if path != "" and os.path.exists(file_path):
+        return send_from_directory(app.static_folder, path)
+    # иначе — index.html (чтобы React-Router работал)
+    return send_from_directory(app.static_folder, "index.html")
+    
 @app.route('/api/tasks', methods=['GET','POST'])
 def api_tasks():
     global tasks
