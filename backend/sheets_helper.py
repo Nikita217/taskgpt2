@@ -1,6 +1,7 @@
 import os, json, gspread
 from gspread.exceptions import WorksheetNotFound
 from oauth2client.service_account import ServiceAccountCredentials
+from gspread.exceptions import WorksheetNotFound
 
 sheet_id = os.getenv("GOOGLE_SHEETS_ID")
 creds_json = os.getenv("GOOGLE_SHEETS_CREDENTIALS")
