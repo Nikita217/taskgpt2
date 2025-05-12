@@ -13,9 +13,25 @@ else:
     sheet = None
 
 def load_tasks():
-    if not sheet: return []
-    ws = sheet.worksheet('Tasks')
-    return ws.get_all_records()
+    if not sheet:
+        return []
+
+    try:
+        try:
+            ws = sheet.worksheet("Tasks")
+        except WorksheetNotFound:
+            # Листа нет – создаём и добавляем заголовки
+            ws = sheet.add_worksheet(title="Tasks", rows=200, cols=6)
+            ws.append_row(
+                ["ID", "Title", "Description",
+                 "DueDate", "Completed", "Frozen"]
+            )
+            print("Worksheet 'Tasks' created automatically.")
+
+        return ws.get_all_records()
+    except Exception as e:
+        print("Error loading tasks from Google Sheets:", e)
+        return []
 
 def append_task(task):
     if not sheet: return
