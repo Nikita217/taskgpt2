@@ -7,7 +7,7 @@ app = Flask(__name__, static_folder='../frontend_build', static_url_path='')
 
 tasks = []
 
-@app.before_app_first_request
+@app.before_serving
 def load_tasks():
     global tasks
     tasks = sheets_helper.load_tasks()
