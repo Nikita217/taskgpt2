@@ -5,12 +5,8 @@ import chatgpt_helper, sheets_helper, telegram_bot
 
 app = Flask(__name__, static_folder='../frontend_build', static_url_path='')
 
-tasks = []
-
-@app.before_serving
-def load_tasks():
-    global tasks
-    tasks = sheets_helper.load_tasks()
+tasks = sheets_helper.load_tasks()
+print(f"Loaded {len(tasks)} tasks from Google Sheet.")
 
 @app.route('/')
 def index():
