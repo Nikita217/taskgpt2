@@ -1,53 +1,28 @@
-import os
-from flask import Flask, request, jsonify, send_from_directory
-from datetime import datetime
-import chatgpt_helper, sheets_helper, telegram_bot
+"""Flask application factory and server entry point."""
+from flask import Flask
+from flask_cors import CORS
+from dotenv import load_dotenv
 
-app = Flask(__name__, static_folder='../frontend_build', static_url_path='')
+from routes.tasks import tasks_bp
+from routes.plan import plan_bp
+from routes.achievements import achievements_bp
 
-tasks = sheets_helper.load_tasks()
-print(f"Loaded {len(tasks)} tasks from Google Sheet.")
 
-@app.route("/", defaults={"path": ""})
-@app.route("/<path:path>")
-def serve_spa(path):
-    # если запрашивают существующий файл (css/js/png) — отдаём
-    file_path = os.path.join(app.static_folder, path)
-    if path != "" and os.path.exists(file_path):
-        return send_from_directory(app.static_folder, path)
-    # иначе — index.html (чтобы React-Router работал)
-    return send_from_directory(app.static_folder, "index.html")
-    
-@app.route('/api/tasks', methods=['GET','POST'])
-def api_tasks():
-    global tasks
-    if request.method == 'GET':
-        return jsonify(tasks)
-    data = request.get_json()
-    new_task = {
-        'id': len(tasks)+1,
-        'title': data.get('title'),
-        'description': data.get('description',''),
-        'dueDate': data.get('dueDate',''),
-        'completed': False,
-        'frozen': False
-    }
-    tasks.append(new_task)
-    sheets_helper.append_task(new_task)
-    return jsonify(new_task)
+def create_app() -> Flask:
+    """Create and configure Flask app."""
+    load_dotenv()
+    app = Flask(__name__)
 
-@app.route('/api/achievements')
-def api_achievements():
-    return jsonify(sheets_helper.load_achievements())
+    # Allow requests from any origin (adjust in production)
+    CORS(app, resources={r"/api/*": {"origins": "*"}})
 
-@app.route('/api/plan')
-def api_plan():
-    return jsonify(chatgpt_helper.generate_day_plan(tasks))
+    # Register blueprints
+    app.register_blueprint(tasks_bp, url_prefix="/api/tasks")
+    app.register_blueprint(plan_bp, url_prefix="/api")
+    app.register_blueprint(achievements_bp, url_prefix="/api/achievements")
 
-@app.route('/api/ai_suggest', methods=['POST'])
-def api_ai_suggest():
-    prompt = request.get_json().get('prompt','')
-    return jsonify({'suggestions': chatgpt_helper.suggest_tasks(prompt)})
+    return app
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=int(os.getenv('PORT',5000)))
+
+if __name__ == "__main__":
+    create_app().run(debug=True, host="0.0.0.0", port=8000)

@@ -1,7 +1,6 @@
-Flask
-gunicorn          
-openai==0.28.1
-gspread
-oauth2client
-requests
-python-dotenv
+Flask>=3.0
+flask-cors>=4.0
+python-dotenv>=1.0
+gspread>=6.0
+google-auth>=2.25
+openai>=1.3
